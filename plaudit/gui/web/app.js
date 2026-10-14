@@ -69,6 +69,7 @@ function mockApi() {
     async browse() { return "C:\\Program Files\\Example\\app.exe"; },
     async open_logs() {},
     async open_repo() { window.open("https://github.com/kyrixdev/plaudit", "_blank"); },
+    async open_author() { window.open("https://github.com/kyrixdev", "_blank"); },
   };
 }
 
@@ -368,6 +369,10 @@ function bindEvents() {
     if (!(await setOption("startWithWindows", e.target.checked))) e.target.checked = !e.target.checked;
   });
   $("#open-logs").addEventListener("click", () => api.open_logs());
+  for (const id of ["#author-link", "#author-profile"]) {
+    $(id).addEventListener("click", () => api.open_author());
+    $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") api.open_author(); });
+  }
   for (const id of ["#star-sidebar", "#star-about"]) {
     $(id).addEventListener("click", async () => { await api.open_repo(); toast("Opening GitHub - thanks for the star!"); });
   }

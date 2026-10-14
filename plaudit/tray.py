@@ -25,7 +25,8 @@ from . import REPO_URL, startup
 from .audio import resolve_device
 from .engine import PatternEngine
 from .livelog import LOGS_DIR
-from .paths import DATA_DIR, ensure_data_dir, launch
+from .paths import DATA_DIR, ensure_data_dir
+from .windowing import show_settings
 
 TRAY_SETTINGS = DATA_DIR / "tray.json"  # preferences shared with the settings window (paused, notifyActions)
 STATUS_PATH = DATA_DIR / "tray-status.json"  # written by the tray, read by the settings window
@@ -98,8 +99,8 @@ def write_status(state: str, text: str, last_action: str) -> None:
 
 
 def open_settings_window() -> None:
-    """Starts the settings window without a console."""
-    launch("settings")
+    """Restores the settings window if it's open (even minimised), otherwise opens it."""
+    show_settings()
 
 
 class TrayApp:
@@ -130,7 +131,7 @@ class TrayApp:
             item(lambda _: f"Last: {self.last_action}" if self.last_action else "No actions yet", None, enabled=False),
             pystray.Menu.SEPARATOR,
             item(lambda _: "Resume listening" if self.paused else "Pause listening", self.toggle_pause),
-            item("Open Plaudit...", self.open_settings),
+            item("Open Plaudit", self.open_settings, default=True),
             item("Open logs folder", self.open_logs),
             item("Star Plaudit on GitHub", self.open_repo),
             pystray.Menu.SEPARATOR,

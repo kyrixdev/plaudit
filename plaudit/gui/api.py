@@ -10,7 +10,7 @@ from pathlib import Path
 
 import webbrowser
 
-from .. import REPO_URL, startup
+from .. import AUTHOR_URL, REPO_URL, startup
 from ..actions import KINDS, MEDIA_KEYS, SOUNDS, ActionDispatcher, ActionError, ZoneAction, plan
 from ..livelog import LOGS_DIR
 from ..paths import launch
@@ -188,6 +188,9 @@ class SettingsApi:
     def open_logs(self) -> None:
         LOGS_DIR.mkdir(parents=True, exist_ok=True)
         os.startfile(LOGS_DIR)
+
+    def open_author(self) -> None:
+        webbrowser.open(AUTHOR_URL)
 
     def open_repo(self) -> None:
         """Opens the GitHub page in the browser, where people can star the project."""

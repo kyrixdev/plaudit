@@ -4,6 +4,8 @@
 track, four times to take a screenshot. You choose what each count does. Plaudit uses your laptop's built-in
 microphone, needs no calibration, and audio never leaves your PC.
 
+Made by [Oussama Kefi](https://github.com/kyrixdev).
+
 Plaudit started as a Windows port of [Holo](https://github.com/JustinGamer191/Holo) (macOS, MIT) by JustinGamer191,
 which recognises *where* you tap on a desk. That port is still included as an experimental mode (see
 [Desk zones](#experimental-desk-zones)).

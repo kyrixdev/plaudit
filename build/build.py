@@ -21,7 +21,7 @@ WORK = BUILD / "work"
 ICON = ROOT / "assets" / "plaudit.ico"
 
 sys.path.insert(0, str(ROOT))
-from plaudit import REPO_URL, __version__  # noqa: E402
+from plaudit import __version__  # noqa: E402
 
 # Keep the installer small: it only needs the installer screens, not the audio engine.
 SETUP_EXCLUDES = ["numpy", "sounddevice", "_sounddevice_data", "PIL", "pystray", "pytest"]
@@ -36,11 +36,11 @@ def version_file(name: str, description: str) -> Path:
   ffi=FixedFileInfo(filevers=({tuple_text}), prodvers=({tuple_text}), mask=0x3f, flags=0x0, OS=0x40004,
                     fileType=0x1, subtype=0x0, date=(0, 0)),
   kids=[StringFileInfo([StringTable('040904B0', [
-      StringStruct('CompanyName', 'kyrixdev'),
+      StringStruct('CompanyName', 'Oussama Kefi'),
       StringStruct('FileDescription', '{description}'),
       StringStruct('FileVersion', '{__version__}'),
       StringStruct('InternalName', '{name}'),
-      StringStruct('LegalCopyright', 'MIT licence - {REPO_URL}'),
+      StringStruct('LegalCopyright', 'Copyright (c) 2026 Oussama Kefi. MIT licence.'),
       StringStruct('OriginalFilename', '{name}.exe'),
       StringStruct('ProductName', 'Plaudit'),
       StringStruct('ProductVersion', '{__version__}')])]),

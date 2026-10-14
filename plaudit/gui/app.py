@@ -9,6 +9,7 @@ from pathlib import Path
 import webview
 
 from ..livelog import LOGS_DIR
+from ..windowing import activate_settings_window, claim_single_instance, release_single_instance
 from .api import SettingsApi
 
 WEB = Path(__file__).resolve().parent / "web"
@@ -20,6 +21,10 @@ def main() -> int:
     handler = RotatingFileHandler(LOGS_DIR / "settings.log", maxBytes=500_000, backupCount=1, encoding="utf-8")
     handler.setFormatter(logging.Formatter("%(asctime)s %(name)s %(levelname)s %(message)s"))
     logging.basicConfig(level=logging.INFO, handlers=[handler])  # pywebview's own errors land here too
+    if not claim_single_instance():
+        log.info("settings window already open; bringing it to the front")
+        activate_settings_window()
+        return 0
     log.info("settings window starting")
     api = SettingsApi()
     window = webview.create_window(
@@ -38,5 +43,7 @@ def main() -> int:
     except Exception:
         log.exception("settings window crashed")
         raise
+    finally:
+        release_single_instance()
     log.info("settings window closed")
     return 0

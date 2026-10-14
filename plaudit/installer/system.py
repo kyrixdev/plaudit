@@ -21,7 +21,7 @@ from .. import REPO_URL
 
 APP_NAME = "Plaudit"
 EXE_NAME = "Plaudit.exe"
-PUBLISHER = "kyrixdev"
+PUBLISHER = "Oussama Kefi"
 UNINSTALL_KEY = r"Software\Microsoft\Windows\CurrentVersion\Uninstall\Plaudit"
 CREATE_NO_WINDOW = 0x08000000
 
