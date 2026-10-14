@@ -8,25 +8,25 @@ Plaudit started as a Windows port of [Holo](https://github.com/JustinGamer191/Ho
 which recognises *where* you tap on a desk. That port is still included as an experimental mode (see
 [Desk zones](#experimental-desk-zones)).
 
-## Requirements
+## Install
 
-- Windows 10 or 11 with a built-in (or any) microphone
-- Python 3.11+
-- Microsoft Edge WebView2 Runtime for the settings window (preinstalled on Windows 11)
+1. Download **`Plaudit-Setup-<version>.exe`** from [Releases](https://github.com/kyrixdev/plaudit/releases).
+2. Run it. The installer is per-user, so no administrator rights are needed. It installs to
+   `%LOCALAPPDATA%\Programs\Plaudit`, adds Start menu (and optionally desktop) shortcuts, and can start Plaudit
+   when you sign in.
+3. Windows may show *"Windows protected your PC"*, because the installer isn't code-signed yet. Click
+   **More info → Run anyway**.
 
-## Setup
+Uninstall from **Settings → Apps → Installed apps → Plaudit**. You can keep or remove your settings, which live in
+`%APPDATA%\Plaudit`.
 
-```bash
-python -m venv .venv
-.venv\Scripts\python -m pip install -r requirements.txt
-```
+Requires Windows 10 or 11 with a microphone, and the Microsoft Edge WebView2 Runtime (preinstalled on Windows 11).
 
 ## Using Plaudit
 
-1. Double-click **`Plaudit Settings.bat`** to open the settings window. Under **Clap Patterns**, choose what 2, 3,
-   4 and 5 claps do. Use **Try it** to test an action.
-2. Go to **Listening** and click **Start**, or double-click **`plaudit-tray.bat`**. Plaudit runs in the system tray
-   (a round icon near the clock) and listens in the background.
+1. Open **Plaudit** from the Start menu. The settings window opens, and Plaudit starts listening in the system tray
+   (a round icon near the clock).
+2. Under **Clap Patterns**, choose what 2, 3, 4 and 5 claps do. Use **Try it** to test an action.
 3. Clap. The action runs about 0.7 s after your last clap, once Plaudit knows how many there were.
 
 The settings window is modelled on macOS System Settings and follows the Windows light/dark theme:
@@ -148,9 +148,40 @@ Holo's active-probe and hybrid sensing modes (a quiet speaker chirp) aren't port
 
 ## Development
 
+Run from source (Python 3.11+):
+
+```bash
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements-dev.txt
+```
+
 ```bash
 .venv\Scripts\python -m pytest tests
 ```
+
+`Plaudit Settings.bat` and `plaudit-tray.bat` run the app from source. Settings, logs and reports then stay in the
+project folder instead of `%APPDATA%\Plaudit`.
+
+Build the app and the installer:
+
+```bash
+.venv\Scripts\python builduild.py
+```
+
+This produces `build\dist\Plaudit\Plaudit.exe` (the app, built with PyInstaller) and
+`build\dist\Plaudit-Setup-<version>.exe`, a single-file installer that carries the app. `Plaudit.exe` has these
+modes:
+
+| Command | What it does |
+| --- | --- |
+| `Plaudit.exe` | Opens the settings window, and starts the tray if it isn't running |
+| `Plaudit.exe --tray` | Listens in the tray only (used for "Start with Windows") |
+| `Plaudit.exe --settings` | Opens the settings window only |
+| `Plaudit.exe --uninstall` | The uninstaller (run by Installed apps) |
+| `Plaudit.exe --diagnose` | Writes an audio report to `%APPDATA%\Plaudit\logs\diagnostics.txt` (attach it to bug reports) |
+
+The install and uninstall screens are `plaudit/installer/web/`, and the Windows plumbing is
+`plaudit/installer/system.py`.
 
 The settings UI is plain HTML/CSS/JS in `plaudit/gui/web/`, served in a native window by
 [pywebview](https://pywebview.flowrl.com/). Opened in a normal browser, it runs against built-in sample data, which is

@@ -6,7 +6,9 @@ import csv
 from datetime import datetime
 from pathlib import Path
 
-LOGS_DIR = Path(__file__).resolve().parent.parent / "logs"
+from .paths import DATA_DIR
+
+LOGS_DIR = DATA_DIR / "logs"
 COLUMNS = ["timestamp", "stream_seconds", "recognised", "confidence", "response_ms", "rejection_reason",
            "peak", "snr_db", "trigger", "action"]
 

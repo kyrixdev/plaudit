@@ -4,6 +4,9 @@
 .pytest_cache/
 .venv/
 __pycache__/
+build/*.log
+build/dist/
+build/work/
 logs/
 patterns.json
 profiles/

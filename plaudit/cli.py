@@ -24,11 +24,11 @@ from .livelog import LiveLog
 from .models import DeskZone, LabeledTap, SignalQuality
 from .engine import PatternEngine
 from .patterns import COUNTS, PatternSettings, onset_counter
+from .paths import DATA_DIR
 from .profile import DeskProfile, latest_profile, profile_path
 from .trigger import DOUBLE_WINDOW_S, TapTrigger
 
-ROOT = Path(__file__).resolve().parent.parent
-REPORTS = ROOT / "reports"
+REPORTS = DATA_DIR / "reports"
 GUIDED_MIN_SNR_DB = 7.0
 
 
@@ -86,7 +86,7 @@ def cmd_listen(args) -> int:
     record = None
     if args.record:
         record = Path(args.record) if args.record != "auto" else \
-            ROOT / "recordings" / f"listen-{datetime.now():%Y%m%d-%H%M%S}.wav"
+            DATA_DIR / "recordings" / f"listen-{datetime.now():%Y%m%d-%H%M%S}.wav"
     listener = open_listener(args, record)
     taps = []
     ignored = 0

@@ -75,6 +75,7 @@ class FakeRegistry:
     HKEY_CURRENT_USER = "HKCU"
     KEY_SET_VALUE = 2
     REG_SZ = 1
+    REG_DWORD = 4
 
     def __init__(self):
         self.values = {}
@@ -103,6 +104,13 @@ class FakeRegistry:
     def SetValueEx(self, key, name, reserved, kind, value):
         self.values[(key.path, name)] = value
 
+    def DeleteKey(self, root, path):
+        doomed = [k for k in self.values if k[0] == path]
+        if not doomed:
+            raise FileNotFoundError
+        for k in doomed:
+            del self.values[k]
+
     def DeleteValue(self, key, name):
         if (key.path, name) not in self.values:
             raise FileNotFoundError
@@ -116,7 +124,7 @@ def test_start_with_windows(monkeypatch):
     startup.enable()
     assert startup.is_enabled()
     command = fake.values[(startup.RUN_KEY, startup.VALUE_NAME)]
-    assert "pythonw.exe" in command and command.endswith('plaudit_tray.pyw"')
+    assert "pythonw.exe" in command and command.rstrip('"').endswith("plaudit_tray.pyw")
     startup.disable()
     assert not startup.is_enabled()
     startup.disable()  # disabling twice is harmless

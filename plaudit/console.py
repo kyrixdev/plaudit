@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .audio import AudioInput, InputDevice, WavWriter, open_input
+from .audio import InputDevice, WavWriter, open_input
 from .detector import ImpactMetrics, StreamingTapDetector
 from .features import TapFeatureExtractor
 from .models import DeskZone, DetectedTap, TapFeatureVector

@@ -2,19 +2,18 @@
 
 from __future__ import annotations
 
-import sys
+import subprocess
 import winreg
-from pathlib import Path
+
+from .paths import launch_args
 
 RUN_KEY = r"Software\Microsoft\Windows\CurrentVersion\Run"
 VALUE_NAME = "Plaudit"
-ROOT = Path(__file__).resolve().parent.parent
 
 
 def launch_command() -> str:
-    """pythonw (no console window) running the tray launcher."""
-    pythonw = Path(sys.executable).with_name("pythonw.exe")
-    return f'"{pythonw}" "{ROOT / "plaudit_tray.pyw"}"'
+    """The tray app, started without a console window."""
+    return subprocess.list2cmdline(launch_args("tray"))
 
 
 def is_enabled(key_path: str = RUN_KEY, name: str = VALUE_NAME) -> bool:

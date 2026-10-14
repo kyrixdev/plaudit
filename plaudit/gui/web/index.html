@@ -21,6 +21,7 @@
       <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
       <symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></symbol>
       <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></symbol>
       <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z"/></symbol>
       <!-- action kinds -->
       <symbol id="k-none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M6.5 17.5l11-11"/></symbol>
@@ -59,6 +60,12 @@
           <span class="tile tile-gray" aria-hidden="true"><svg><use href="#i-info"/></svg></span>About
         </button>
       </nav>
+      <div class="sidebar-footer">
+        <button class="star-button" id="star-sidebar" type="button">
+          <svg aria-hidden="true"><use href="#i-star"/></svg>
+          <span><strong>Star on GitHub</strong><small>Plaudit is free and open source</small></span>
+        </button>
+      </div>
     </aside>
 
     <main class="content">
@@ -146,6 +153,8 @@
             <div class="row"><span class="row-label">Listening engine</span><span class="row-value">Fast onset detector, on-device</span></div>
             <div class="row"><span class="row-label">Privacy</span><span class="row-value">Audio never leaves this PC</span></div>
           </div>
+          <p class="about-star">If Plaudit is useful to you, a star helps other people find it.</p>
+          <button class="btn btn-primary" id="star-about" type="button"><svg aria-hidden="true"><use href="#i-star"/></svg>Star Plaudit on GitHub</button>
         </section>
       </div>
     </main>

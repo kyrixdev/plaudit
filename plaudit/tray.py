@@ -11,24 +11,24 @@ import ctypes
 import json
 import logging
 import os
-import subprocess
 import threading
 import time
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
-from pathlib import Path
 
 import pystray
 from PIL import Image, ImageDraw
 
-from . import startup
+import webbrowser
+
+from . import REPO_URL, startup
 from .audio import resolve_device
 from .engine import PatternEngine
 from .livelog import LOGS_DIR
+from .paths import DATA_DIR, ensure_data_dir, launch
 
-ROOT = Path(__file__).resolve().parent.parent
-TRAY_SETTINGS = ROOT / "tray.json"  # preferences shared with the settings window (paused, notifyActions)
-STATUS_PATH = ROOT / "tray-status.json"  # written by the tray, read by the settings window
+TRAY_SETTINGS = DATA_DIR / "tray.json"  # preferences shared with the settings window (paused, notifyActions)
+STATUS_PATH = DATA_DIR / "tray-status.json"  # written by the tray, read by the settings window
 MUTEX_NAME = "Local\\PlauditTray"
 RETRY_S = 5.0
 FLASH_S = 0.8
@@ -73,6 +73,7 @@ def load_tray_settings() -> dict:
 
 
 def save_tray_settings(settings: dict) -> None:
+    ensure_data_dir()
     temporary = TRAY_SETTINGS.with_suffix(".tmp")
     temporary.write_text(json.dumps(settings, indent=1), encoding="utf-8")
     temporary.replace(TRAY_SETTINGS)
@@ -88,6 +89,7 @@ def write_status(state: str, text: str, last_action: str) -> None:
     status = {"state": state, "text": text, "lastAction": last_action, "pid": os.getpid(),
               "updated": datetime.now().isoformat(timespec="seconds")}
     try:
+        ensure_data_dir()
         temporary = STATUS_PATH.with_suffix(".tmp")
         temporary.write_text(json.dumps(status), encoding="utf-8")
         temporary.replace(STATUS_PATH)
@@ -97,8 +99,7 @@ def write_status(state: str, text: str, last_action: str) -> None:
 
 def open_settings_window() -> None:
     """Starts the settings window without a console."""
-    pythonw = Path(os.sys.executable).with_name("pythonw.exe")
-    subprocess.Popen([str(pythonw), str(ROOT / "plaudit_settings.pyw")], cwd=ROOT)
+    launch("settings")
 
 
 class TrayApp:
@@ -115,6 +116,7 @@ class TrayApp:
         self._preferences_mtime = self._preferences_stamp()
         self._stop = threading.Event()
         self._flash_until = 0.0
+        self._icon_ready = threading.Event()
         self.icon = pystray.Icon("plaudit", icon_image("starting"), "Plaudit - starting", menu=self._menu())
         if self.paused:
             self.state, self.status_text = "paused", "Paused - microphone off"
@@ -130,6 +132,7 @@ class TrayApp:
             item(lambda _: "Resume listening" if self.paused else "Pause listening", self.toggle_pause),
             item("Open Plaudit...", self.open_settings),
             item("Open logs folder", self.open_logs),
+            item("Star Plaudit on GitHub", self.open_repo),
             pystray.Menu.SEPARATOR,
             item("Notify when an action runs", self.toggle_notify, checked=lambda _: self.notify_actions),
             item("Start with Windows", self.toggle_startup, checked=lambda _: startup.is_enabled()),
@@ -173,6 +176,9 @@ class TrayApp:
         LOGS_DIR.mkdir(parents=True, exist_ok=True)
         os.startfile(LOGS_DIR)
 
+    def open_repo(self, *_):
+        webbrowser.open(REPO_URL)
+
     def toggle_notify(self, *_):
         self.notify_actions = not self.notify_actions
         update_tray_settings(notifyActions=self.notify_actions)
@@ -213,19 +219,28 @@ class TrayApp:
 
     def _notify(self, message: str) -> None:
         try:
-            self.icon.notify(message, "Plaudit")
+            self.icon.notify(message[:250], "Plaudit")  # Windows rejects longer balloon texts
         except Exception:  # notifications are best-effort
             log.exception("notification failed")
 
     # -- worker ---------------------------------------------------------------------------------
 
     def run(self) -> None:
-        self.icon.run(setup=self._setup)
+        """The icon's message loop runs on a background thread and listening on the main
+        thread: in the packaged app the microphone only opens from the main thread."""
+        icon_thread = threading.Thread(target=self.icon.run, kwargs={"setup": self._setup}, name="plaudit-icon")
+        icon_thread.start()
+        if self._icon_ready.wait(15):
+            self._work()
+        else:
+            log.error("the tray icon didn't start")
+            self.icon.stop()
+        icon_thread.join(5)
 
     def _setup(self, icon) -> None:
         icon.visible = True
         self._refresh()
-        threading.Thread(target=self._work, name="plaudit-listener", daemon=True).start()
+        self._icon_ready.set()
 
     def _work(self) -> None:
         flashing = False

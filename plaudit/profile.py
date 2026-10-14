@@ -11,9 +11,10 @@ from pathlib import Path
 from .actions import ZoneAction
 from .classifier import TrainedTapClassifier
 from .models import DeskZone
+from .paths import DATA_DIR
 
 PROFILE_VERSION = 1
-PROFILES_DIR = Path(__file__).resolve().parent.parent / "profiles"
+PROFILES_DIR = DATA_DIR / "profiles"
 
 
 @dataclass

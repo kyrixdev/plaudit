@@ -6,17 +6,17 @@ from __future__ import annotations
 import csv
 import ctypes
 import os
-import subprocess
-import sys
 from pathlib import Path
 
-from .. import startup
+import webbrowser
+
+from .. import REPO_URL, startup
 from ..actions import KINDS, MEDIA_KEYS, SOUNDS, ActionDispatcher, ActionError, ZoneAction, plan
 from ..livelog import LOGS_DIR
+from ..paths import launch
 from ..patterns import COUNTS, MAX_GAP_S, SETTINGS_PATH, PatternSettings
 from ..tray import MUTEX_NAME, STATUS_PATH, load_tray_settings, update_tray_settings
 
-ROOT = Path(__file__).resolve().parent.parent.parent
 MIN_GAP_S, MAX_GAP_LIMIT_S = 0.4, 1.2
 
 # Order and grouping of the action menu, like a macOS pop-up menu with separators.
@@ -173,8 +173,7 @@ class SettingsApi:
         """Resumes listening, starting the tray app if it isn't running."""
         update_tray_settings(paused=False)
         if not tray_running():
-            pythonw = Path(sys.executable).with_name("pythonw.exe")
-            subprocess.Popen([str(pythonw), str(ROOT / "plaudit_tray.pyw")], cwd=ROOT)
+            launch("tray")
         return {"ok": True}
 
     def browse(self) -> str | None:
@@ -189,6 +188,10 @@ class SettingsApi:
     def open_logs(self) -> None:
         LOGS_DIR.mkdir(parents=True, exist_ok=True)
         os.startfile(LOGS_DIR)
+
+    def open_repo(self) -> None:
+        """Opens the GitHub page in the browser, where people can star the project."""
+        webbrowser.open(REPO_URL)
 
     # -- helpers ----------------------------------------------------------------------------------
 

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plaudit Setup</title>
+  <link rel="stylesheet" href="setup.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-hands" viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10M12 10V4.5a1.5 1.5 0 0 1 3 0V11M15 11V6.5a1.5 1.5 0 0 1 3 0V14a6 6 0 0 1-6 6h-1a6 6 0 0 1-4.6-2.2L4 14.6a1.6 1.6 0 0 1 2.4-2.1L9 15V8.5"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9z"/></symbol>
+      <symbol id="i-min" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></symbol>
+      <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.5 7a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17v.5"/></symbol>
+      <symbol id="i-chat" viewBox="0 0 24 24"><path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-4 3.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="setup">
+    <aside class="brand pywebview-drag-region">
+      <div class="brand-top">
+        <div class="logo" aria-hidden="true">
+          <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+        </div>
+        <div class="brand-name">Plaudit</div>
+        <div class="brand-version" id="brand-version">&nbsp;</div>
+      </div>
+      <ol class="steps" id="steps" aria-label="Progress"></ol>
+      <div class="brand-foot">Open source &middot; MIT licence</div>
+    </aside>
+
+    <main class="panel">
+      <div class="titlebar pywebview-drag-region">
+        <button class="win-button" id="minimize" type="button" aria-label="Minimize"><svg><use href="#i-min"/></svg></button>
+        <button class="win-button close" id="close" type="button" aria-label="Close"><svg><use href="#i-close"/></svg></button>
+      </div>
+
+      <!-- Install: welcome -->
+      <section class="screen" id="welcome" hidden>
+        <h1>Control your PC with a clap</h1>
+        <p class="lead">Clap, snap or knock a few times and Plaudit runs the action you chose: play music, skip a track, take a screenshot and more.</p>
+        <ul class="features">
+          <li><span class="tile blue"><svg><use href="#i-hands"/></svg></span><span><strong>Two to five claps</strong>Each count does something different. One clap is ignored.</span></li>
+          <li><span class="tile green"><svg><use href="#i-moon"/></svg></span><span><strong>Quietly in the background</strong>Lives in the system tray and ignores claps while you type.</span></li>
+          <li><span class="tile violet"><svg><use href="#i-lock"/></svg></span><span><strong>Private by design</strong>Sound is analysed on this PC and never recorded or sent anywhere.</span></li>
+        </ul>
+        <p class="note" id="upgrade-note" hidden></p>
+        <div class="actions"><span class="spacer"></span><button class="btn primary" id="to-options" type="button">Continue</button></div>
+      </section>
+
+      <!-- Install: options -->
+      <section class="screen" id="options" hidden>
+        <h1>Set up Plaudit</h1>
+        <p class="lead">Plaudit installs just for you, so it doesn't need administrator rights.</p>
+        <div class="group">
+          <div class="row">
+            <span class="row-icon"><svg><use href="#i-folder"/></svg></span>
+            <span class="row-text"><span>Install location</span><small id="install-dir">-</small></span>
+          </div>
+          <label class="row" for="opt-desktop">
+            <span class="row-text"><span>Add a desktop shortcut</span></span>
+            <input type="checkbox" class="switch" id="opt-desktop" role="switch" checked>
+          </label>
+          <label class="row" for="opt-startup">
+            <span class="row-text"><span>Start Plaudit when you sign in</span><small>So claps work without opening anything</small></span>
+            <input type="checkbox" class="switch" id="opt-startup" role="switch" checked>
+          </label>
+          <label class="row" for="opt-open">
+            <span class="row-text"><span>Open Plaudit when setup finishes</span></span>
+            <input type="checkbox" class="switch" id="opt-open" role="switch" checked>
+          </label>
+        </div>
+        <div class="actions">
+          <button class="btn" id="back" type="button">Back</button>
+          <span class="spacer"></span>
+          <button class="btn primary" id="install" type="button">Install</button>
+        </div>
+      </section>
+
+      <!-- Shared: progress -->
+      <section class="screen" id="progress" hidden>
+        <h1 id="progress-title">Installing Plaudit</h1>
+        <p class="lead" id="progress-message" aria-live="polite">Preparing...</p>
+        <div class="meter" role="progressbar" aria-labelledby="progress-title" aria-valuemin="0" aria-valuemax="100" id="meter">
+          <div class="meter-fill" id="meter-fill"></div>
+        </div>
+        <div class="meter-label" id="meter-label">0%</div>
+      </section>
+
+      <!-- Install: done -->
+      <section class="screen" id="done" hidden>
+        <div class="success" aria-hidden="true"><svg><use href="#i-check"/></svg></div>
+        <h1>Plaudit is ready</h1>
+        <p class="lead">Try it now: clap twice to play or pause your music. You can change what each clap does in Plaudit's settings.</p>
+        <div class="star-card">
+          <span class="star-icon" aria-hidden="true"><svg><use href="#i-star"/></svg></span>
+          <span class="star-text"><strong>Enjoying Plaudit?</strong>A star on GitHub helps others find it.</span>
+          <button class="btn" id="star" type="button"><svg aria-hidden="true"><use href="#i-star"/></svg>Star on GitHub</button>
+        </div>
+        <div class="actions"><span class="spacer"></span><button class="btn primary" id="finish" type="button">Finish</button></div>
+      </section>
+
+      <!-- Uninstall: confirm -->
+      <section class="screen" id="confirm" hidden>
+        <h1>Uninstall Plaudit?</h1>
+        <p class="lead">Plaudit will stop listening and be removed from this PC, along with its shortcuts and its startup entry.</p>
+        <div class="group">
+          <label class="row" for="opt-data">
+            <span class="row-text"><span>Also remove my settings and activity</span><small id="data-dir">Keep them if you might reinstall later.</small></span>
+            <input type="checkbox" class="switch" id="opt-data" role="switch">
+          </label>
+        </div>
+        <div class="actions">
+          <button class="btn" id="cancel" type="button">Cancel</button>
+          <span class="spacer"></span>
+          <button class="btn destructive" id="uninstall" type="button">Uninstall</button>
+        </div>
+      </section>
+
+      <!-- Uninstall: done -->
+      <section class="screen" id="removed" hidden>
+        <div class="success muted" aria-hidden="true"><svg><use href="#i-check"/></svg></div>
+        <h1>Plaudit has been removed</h1>
+        <p class="lead">Thanks for trying it. If something didn't work for you, a quick note helps make it better.</p>
+        <div class="star-card">
+          <span class="star-icon chat" aria-hidden="true"><svg><use href="#i-chat"/></svg></span>
+          <span class="star-text"><strong>Tell us why</strong>Open an issue on GitHub, or leave a star.</span>
+          <button class="btn" id="feedback" type="button">Give feedback</button>
+        </div>
+        <div class="actions"><span class="spacer"></span><button class="btn primary" id="close-done" type="button">Close</button></div>
+      </section>
+
+      <!-- Shared: error -->
+      <section class="screen" id="error" hidden>
+        <div class="success error" aria-hidden="true"><svg><use href="#i-alert"/></svg></div>
+        <h1>Something went wrong</h1>
+        <p class="lead" id="error-message" role="alert"></p>
+        <div class="actions">
+          <button class="btn" id="error-close" type="button">Close</button>
+          <span class="spacer"></span>
+          <button class="btn primary" id="retry" type="button">Try again</button>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="setup.js"></script>
+</body>
+</html>

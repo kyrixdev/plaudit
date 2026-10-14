@@ -14,12 +14,13 @@ from pathlib import Path
 import numpy as np
 
 from .classifier import ClassificationDecision
+from .paths import DATA_DIR
 from .models import DeskZone, RejectionReason, TapFeatureVector
 
 TAPS_PER_ZONE = 15
 MINIMUM_ACCURACY = 0.80
 MAXIMUM_MEDIAN_RESPONSE_MS = 200.0
-REPORTS_DIR = Path(__file__).resolve().parent.parent / "reports"
+REPORTS_DIR = DATA_DIR / "reports"
 
 
 def _now() -> str:

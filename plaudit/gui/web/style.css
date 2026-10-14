@@ -98,7 +98,19 @@ svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width:
 .dot.paused { background: var(--orange); }
 .dot.error { background: var(--red); }
 
-.nav { display: flex; flex-direction: column; gap: 2px; }
+.nav { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.sidebar-footer { padding: 0 2px; }
+.star-button {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border-radius: 9px; cursor: pointer; text-align: left;
+  background: var(--group); border: 1px solid var(--group-border); box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.12s var(--ease), background 0.15s;
+}
+.star-button:hover { background: color-mix(in srgb, var(--group) 94%, var(--label)); }
+.star-button:active { transform: scale(0.98); }
+.star-button svg { width: 20px; height: 20px; color: #f5b400; fill: #f5b400; stroke: #e0a200; flex: none; }
+.star-button span { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+.star-button strong { font-weight: 600; font-size: 13px; }
+.star-button small { color: var(--secondary); font-size: 11.5px; }
 .nav-item {
   display: flex; align-items: center; gap: 9px; width: 100%; padding: 6px 8px; border: 0; border-radius: 7px;
   background: transparent; text-align: left; cursor: pointer; font-size: 13.5px; min-height: 34px;
@@ -232,6 +244,8 @@ input[type="range"]::-webkit-slider-thumb {
 .about h2 { margin: 0; font-size: 20px; font-weight: 650; }
 .about-version { margin: 2px 0 22px; color: var(--secondary); }
 .about-group { text-align: left; max-width: 480px; margin: 0 auto; }
+.about-star { margin: 22px 0 10px; color: var(--secondary); }
+#star-about svg { fill: currentColor; }
 
 /* Sheet */
 .scrim { position: fixed; inset: 0; background: var(--scrim); animation: fade 0.18s ease-out; }

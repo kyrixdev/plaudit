@@ -13,8 +13,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .actions import ZoneAction
+from .paths import DATA_DIR
 
-SETTINGS_PATH = Path(__file__).resolve().parent.parent / "patterns.json"
+SETTINGS_PATH = DATA_DIR / "patterns.json"
 COUNTS = (2, 3, 4, 5)  # a single tap is too easy to trigger by accident
 MAX_GAP_S = 0.70  # a burst ends after this much quiet
 REBOUND_GAP_S = 0.30  # the desk's rebound arrives just after the detector's ~230 ms dead time...
@@ -60,6 +61,7 @@ class PatternSettings:
         return cls.from_dict(json.loads(path.read_text(encoding="utf-8")))
 
     def save(self, path: Path = SETTINGS_PATH) -> Path:
+        path.parent.mkdir(parents=True, exist_ok=True)
         temporary = path.with_suffix(".tmp")
         temporary.write_text(json.dumps(self.to_dict(), indent=1), encoding="utf-8")
         temporary.replace(path)
