@@ -29,6 +29,7 @@ Uninstall from **Settings → Apps → Installed apps → Plaudit**. You can kee
 `%APPDATA%\Plaudit`.
 
 Requires Windows 10 or 11 with a microphone, and the Microsoft Edge WebView2 Runtime (preinstalled on Windows 11).
+For how releases are built and signed, see the [code signing policy](#code-signing-policy).
 
 ## Using Plaudit
 
@@ -194,6 +195,25 @@ The install and uninstall screens are `plaudit/installer/web/`, and the Windows 
 The settings UI is plain HTML/CSS/JS in `plaudit/gui/web/`, served in a native window by
 [pywebview](https://pywebview.flowrl.com/). Opened in a normal browser, it runs against built-in sample data, which is
 handy for design work.
+
+## Code signing policy
+
+Plaudit's Windows releases are built by GitHub Actions from this repository's source code and signed through the
+[SignPath Foundation](https://signpath.org) open-source programme. Our application is pending. Until it's approved,
+releases are unsigned, and v0.2.0 is unsigned.
+
+Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by
+[SignPath Foundation](https://signpath.org).
+
+- Committers and reviewers: [Oussama Kefi](https://github.com/kyrixdev)
+- Approvers: [Oussama Kefi](https://github.com/kyrixdev)
+
+Only Plaudit's own files are signed (`Plaudit.exe` and the installer), and every release is signed only after an
+approver reviews the signing request. How it works: [docs/SIGNING.md](docs/SIGNING.md).
+
+**Privacy:** this program will not transfer any information to other networked systems unless specifically requested
+by the user or the person installing or operating it. Plaudit analyses microphone audio on your PC and never records
+or sends it. Its only network use is opening a website when you assign that action to a clap pattern.
 
 ## License
 

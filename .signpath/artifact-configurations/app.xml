@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SignPath artifact configuration, slug "app".
+     The artifact is build\dist\Plaudit\ uploaded by actions/upload-artifact (a ZIP).
+     Only our own executable is signed; the bundled third-party runtime files are not. -->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <pe-file path="Plaudit.exe" product-name="Plaudit" product-version="${version}">
+      <authenticode-sign description="Plaudit" description-url="https://github.com/kyrixdev/plaudit" />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>

@@ -1,0 +1,169 @@
+# Builds Plaudit on a GitHub-hosted Windows runner, optionally signs it through
+# SignPath (SignPath Foundation's free open-source programme), and can create a
+# draft GitHub release with the installer.
+#
+# Run it from the Actions tab on the main branch ("Run workflow").
+# Signing order: Plaudit.exe first, so the installer carries the signed app,
+# then the installer itself. See docs/SIGNING.md for the one-time SignPath setup.
+
+name: Release build
+
+on:
+  workflow_dispatch:
+    inputs:
+      signing-policy:
+        description: "SignPath signing policy ('none' builds unsigned)"
+        type: choice
+        options: [none, test-signing, release-signing]
+        default: none
+      draft-release:
+        description: "Create a draft GitHub release v<version> with the installer"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write  # create the draft release
+  actions: read    # SignPath downloads the uploaded artifacts
+
+concurrency: release-build
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 150
+    env:
+      SIGN: ${{ inputs.signing-policy != 'none' }}
+    defaults:
+      run:
+        shell: pwsh
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+
+      - name: Test
+        run: python -m pytest -q tests
+
+      - name: Read version
+        id: version
+        run: |
+          $version = python -c "import plaudit; print(plaudit.__version__)"
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Build app
+        run: python build/build.py --app-only
+
+      # --- sign Plaudit.exe ------------------------------------------------------------------
+      - name: Upload unsigned app
+        id: unsigned-app
+        if: env.SIGN == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: plaudit-app-unsigned
+          path: build/dist/Plaudit/
+          retention-days: 1
+
+      - name: Sign app with SignPath
+        if: env.SIGN == 'true'
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG || 'plaudit' }}
+          signing-policy-slug: ${{ inputs.signing-policy }}
+          artifact-configuration-slug: app
+          github-artifact-id: ${{ steps.unsigned-app.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 3600  # release signing waits for a manual approval
+          output-artifact-directory: build/signed-app
+          parameters: |
+            version: ${{ toJSON(steps.version.outputs.version) }}
+
+      - name: Use the signed app
+        if: env.SIGN == 'true'
+        run: |
+          Remove-Item build/dist/Plaudit -Recurse -Force
+          Move-Item build/signed-app build/dist/Plaudit
+          $signature = Get-AuthenticodeSignature build/dist/Plaudit/Plaudit.exe
+          "Plaudit.exe signature: $($signature.Status) - $($signature.SignerCertificate.Subject)"
+          if ($signature.Status -ne 'Valid') { throw "Plaudit.exe isn't validly signed" }
+
+      # --- build and sign the installer ----------------------------------------------------------
+      - name: Build installer
+        run: |
+          python build/build.py --setup-only
+          New-Item -ItemType Directory -Force build/stage | Out-Null
+          Copy-Item "build/dist/Plaudit-Setup-${{ steps.version.outputs.version }}.exe" build/stage/Plaudit-Setup.exe
+
+      - name: Upload unsigned installer
+        id: unsigned-installer
+        if: env.SIGN == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: plaudit-installer-unsigned
+          path: build/stage/Plaudit-Setup.exe
+          retention-days: 1
+
+      - name: Sign installer with SignPath
+        if: env.SIGN == 'true'
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG || 'plaudit' }}
+          signing-policy-slug: ${{ inputs.signing-policy }}
+          artifact-configuration-slug: installer
+          github-artifact-id: ${{ steps.unsigned-installer.outputs.artifact-id }}
+          wait-for-completion: true
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: build/signed-installer
+          parameters: |
+            version: ${{ toJSON(steps.version.outputs.version) }}
+
+      - name: Collect release files
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          $name = "Plaudit-Setup-$version.exe"
+          $source = if ($env:SIGN -eq 'true') { "build/signed-installer/Plaudit-Setup.exe" } else { "build/stage/Plaudit-Setup.exe" }
+          New-Item -ItemType Directory -Force build/release | Out-Null
+          Copy-Item $source "build/release/$name"
+          $signature = Get-AuthenticodeSignature "build/release/$name"
+          "Installer signature: $($signature.Status) - $($signature.SignerCertificate.Subject)"
+          if ($env:SIGN -eq 'true' -and $signature.Status -ne 'Valid') { throw "The installer isn't validly signed" }
+          $hash = (Get-FileHash "build/release/$name" -Algorithm SHA256).Hash.ToLower()
+          "$hash  $name" | Out-File "build/release/$name.sha256" -Encoding ascii -NoNewline
+          "## Plaudit $version`n`nSHA-256: ``$hash```nSigned: $($signature.Status -eq 'Valid')" >> $env:GITHUB_STEP_SUMMARY
+
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Plaudit-Setup-${{ steps.version.outputs.version }}
+          path: build/release/
+
+      - name: Create draft release
+        if: inputs.draft-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          $tag = "v$version"
+          gh release view $tag 2>$null
+          if ($LASTEXITCODE -eq 0) { throw "Release $tag already exists; bump __version__ in plaudit/__init__.py first" }
+          $hash = (Get-Content "build/release/Plaudit-Setup-$version.exe.sha256").Split(' ')[0]
+          $signed = if ($env:SIGN -eq 'true') { "signed through SignPath" } else { "unsigned" }
+          @"
+          **Clap, snap or knock to control your Windows PC.**
+
+          Download **Plaudit-Setup-$version.exe** below and run it. It installs just for you, with no administrator rights needed.
+
+          This build is $signed. See the [code signing policy](https://github.com/kyrixdev/plaudit#code-signing-policy).
+
+          SHA-256: ``$hash``
+          "@ | Out-File build/release-notes.md -Encoding utf8
+          gh release create $tag "build/release/Plaudit-Setup-$version.exe" --draft --target "${{ github.sha }}" --title "Plaudit $version" --notes-file build/release-notes.md

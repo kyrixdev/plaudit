@@ -1,8 +1,12 @@
 """Builds Plaudit.exe and the Plaudit-Setup installer.
 
-    .venv\\Scripts\\python build\\build.py
+    .venv\\Scripts\\python build\\build.py                # app + installer
+    .venv\\Scripts\\python build\\build.py --app-only     # stage 1: build\\dist\\Plaudit\\
+    .venv\\Scripts\\python build\\build.py --setup-only   # stage 2: installer from the existing app folder
 
 Output: build\\dist\\Plaudit\\ (the app) and build\\dist\\Plaudit-Setup-<version>.exe.
+CI signs Plaudit.exe between the two stages so the installer carries the signed app
+(see .github/workflows/release.yml).
 Needs the dev requirements: pip install -r requirements-dev.txt
 """
 
@@ -71,19 +75,28 @@ def stop_built_copies() -> None:
 def main() -> None:
     stop_built_copies()
     subprocess.run([sys.executable, str(BUILD / "make_icon.py")], check=True)
-    shutil.rmtree(DIST / "Plaudit", ignore_errors=True)
+    app = DIST / "Plaudit"
+    if "--setup-only" not in sys.argv:
+        build_app()
+    if "--app-only" not in sys.argv:
+        if not (app / "Plaudit.exe").is_file():
+            raise SystemExit(f"{app} has no Plaudit.exe; build the app first (build.py --app-only).")
+        build_setup(app)
 
-    # 1. The app: a folder with Plaudit.exe (starts faster and trips antivirus less than one big file).
+
+def build_app() -> None:
+    """Stage 1: a folder with Plaudit.exe (starts faster and trips antivirus less than one big file)."""
+    shutil.rmtree(DIST / "Plaudit", ignore_errors=True)
     pyinstaller("--name", "Plaudit", "--version-file", str(version_file("Plaudit", "Plaudit")),
                 "--hidden-import", "pystray._win32",
                 *data(ROOT / "plaudit" / "gui" / "web", "plaudit/gui/web"),
                 *data(ROOT / "plaudit" / "installer" / "web", "plaudit/installer/web"),
                 str(BUILD / "entry_app.py"))
-    app = DIST / "Plaudit"
-    if "--app-only" in sys.argv:
-        return
+    print(f"App:       {DIST / 'Plaudit' / 'Plaudit.exe'}", flush=True)
 
-    # 2. The payload: the app folder, zipped.
+
+def build_setup(app: Path) -> None:
+    """Stage 2: zip the app folder as the payload and build the one-file installer around it."""
     payload = WORK / "payload.zip"
     with zipfile.ZipFile(payload, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
         for file in sorted(app.rglob("*")):
@@ -91,7 +104,6 @@ def main() -> None:
                 archive.write(file, file.relative_to(app))
     print(f"payload: {payload.stat().st_size / 1e6:.1f} MB", flush=True)
 
-    # 3. The installer: one .exe carrying the payload.
     setup_name = f"Plaudit-Setup-{__version__}"
     excludes = [arg for module in SETUP_EXCLUDES for arg in ("--exclude-module", module)]
     pyinstaller("--onefile", "--name", setup_name,
@@ -101,8 +113,7 @@ def main() -> None:
                 *data(ROOT / "plaudit" / "installer" / "web", "plaudit/installer/web"),
                 str(BUILD / "entry_setup.py"))
     setup = DIST / f"{setup_name}.exe"
-    print(f"\nApp:       {app / 'Plaudit.exe'}")
-    print(f"Installer: {setup}  ({setup.stat().st_size / 1e6:.1f} MB)")
+    print(f"Installer: {setup}  ({setup.stat().st_size / 1e6:.1f} MB)", flush=True)
 
 
 if __name__ == "__main__":

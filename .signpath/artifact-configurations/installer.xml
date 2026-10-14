@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SignPath artifact configuration, slug "installer".
+     The artifact is the one-file installer staged as Plaudit-Setup.exe (the workflow
+     renames it to Plaudit-Setup-<version>.exe after signing). -->
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <parameters>
+    <parameter name="version" required="true" />
+  </parameters>
+  <zip-file>
+    <pe-file path="Plaudit-Setup.exe" product-name="Plaudit" product-version="${version}">
+      <authenticode-sign description="Plaudit Setup" description-url="https://github.com/kyrixdev/plaudit" />
+    </pe-file>
+  </zip-file>
+</artifact-configuration>
