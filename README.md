@@ -4,6 +4,9 @@
 track, four times to take a screenshot. You choose what each count does. Plaudit uses your laptop's built-in
 microphone, needs no calibration, and audio never leaves your PC.
 
+**[⬇ Download Plaudit for Windows](https://github.com/kyrixdev/plaudit/releases/latest)**: free and open source,
+Windows 10 and 11.
+
 Made by [Oussama Kefi](https://github.com/kyrixdev).
 
 Plaudit started as a Windows port of [Holo](https://github.com/JustinGamer191/Holo) (macOS, MIT) by JustinGamer191,
@@ -12,7 +15,10 @@ which recognises *where* you tap on a desk. That port is still included as an ex
 
 ## Install
 
-1. Download **`Plaudit-Setup-<version>.exe`** from [Releases](https://github.com/kyrixdev/plaudit/releases).
+1. Download **`Plaudit-Setup-<version>.exe`** from the
+   [latest release](https://github.com/kyrixdev/plaudit/releases/latest). Version 0.2.0 is
+   [Plaudit-Setup-0.2.0.exe](https://github.com/kyrixdev/plaudit/releases/download/v0.2.0/Plaudit-Setup-0.2.0.exe)
+   (44 MB).
 2. Run it. The installer is per-user, so no administrator rights are needed. It installs to
    `%LOCALAPPDATA%\Programs\Plaudit`, adds Start menu (and optionally desktop) shortcuts, and can start Plaudit
    when you sign in.
