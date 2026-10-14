@@ -1,0 +1,13 @@
+*.pyc
+*.tmp
+.claude/
+.pytest_cache/
+.venv/
+__pycache__/
+logs/
+patterns.json
+profiles/
+recordings/
+reports/
+tray-status.json
+tray.json

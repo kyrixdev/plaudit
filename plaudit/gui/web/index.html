@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plaudit</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 12h2M7 8v8M11 5v14M15 8v8M19 10v4M21 12h0"/></symbol>
+      <symbol id="i-hands" viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V10M12 10V4.5a1.5 1.5 0 0 1 3 0V11M15 11V6.5a1.5 1.5 0 0 1 3 0V14a6 6 0 0 1-6 6h-1a6 6 0 0 1-4.6-2.2L4 14.6a1.6 1.6 0 0 1 2.4-2.1L9 15V8.5"/></symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+      <symbol id="i-updown" viewBox="0 0 24 24"><path d="M8 9l4-4 4 4M8 15l4 4 4-4"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10-6.5z"/></symbol>
+      <!-- action kinds -->
+      <symbol id="k-none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M6.5 17.5l11-11"/></symbol>
+      <symbol id="k-media" viewBox="0 0 24 24"><path d="M5 6.5v11l8-5.5zM15 6.5v11M19 6.5v11"/></symbol>
+      <symbol id="k-hotkey" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h0M11 10h0M15 10h0M8 14h8"/></symbol>
+      <symbol id="k-open" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></symbol>
+      <symbol id="k-url" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9s1.3-6.4 3.8-9z"/></symbol>
+      <symbol id="k-screenshot" viewBox="0 0 24 24"><path d="M4 8V5h3M17 5h3v3M20 16v3h-3M7 19H4v-3"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="k-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11"/></symbol>
+      <symbol id="k-speak_text" viewBox="0 0 24 24"><path d="M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-8l-4 3.5V16H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z"/><path d="M8.5 10.5h0M12 10.5h0M15.5 10.5h0"/></symbol>
+      <symbol id="k-copy_text" viewBox="0 0 24 24"><rect x="6" y="5" width="12" height="16" rx="2"/><path d="M9 5V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1M9 11h6M9 15h4"/></symbol>
+      <symbol id="k-command" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9l3 3-3 3M12 15h5"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="app">
+    <aside class="sidebar" aria-label="Sections">
+      <div class="identity">
+        <div class="app-icon" aria-hidden="true"><svg><use href="#i-wave"/></svg></div>
+        <div>
+          <div class="identity-name">Plaudit</div>
+          <div class="identity-status"><span class="dot" id="side-dot"></span><span id="side-status">Checking...</span></div>
+        </div>
+      </div>
+      <nav class="nav" role="tablist">
+        <button class="nav-item" role="tab" data-page="patterns" aria-selected="true">
+          <span class="tile tile-blue" aria-hidden="true"><svg><use href="#i-hands"/></svg></span>Clap Patterns
+        </button>
+        <button class="nav-item" role="tab" data-page="listening" aria-selected="false">
+          <span class="tile tile-green" aria-hidden="true"><svg><use href="#i-sliders"/></svg></span>Listening
+        </button>
+        <button class="nav-item" role="tab" data-page="activity" aria-selected="false">
+          <span class="tile tile-orange" aria-hidden="true"><svg><use href="#i-clock"/></svg></span>Activity
+        </button>
+        <button class="nav-item" role="tab" data-page="about" aria-selected="false">
+          <span class="tile tile-gray" aria-hidden="true"><svg><use href="#i-info"/></svg></span>About
+        </button>
+      </nav>
+    </aside>
+
+    <main class="content">
+      <header class="toolbar"><h1 id="page-title">Clap Patterns</h1></header>
+      <div class="scroll" id="scroll">
+
+        <!-- Clap Patterns -->
+        <section class="page" id="page-patterns" role="tabpanel">
+          <div class="hero">
+            <div class="hero-icon tile-blue" aria-hidden="true"><svg><use href="#i-hands"/></svg></div>
+            <div class="hero-text">
+              <h2>Clap to control your PC</h2>
+              <p>Clap, snap or knock a few times anywhere in the room. Each count runs its own action. A single clap does nothing, so stray sounds are ignored.</p>
+            </div>
+          </div>
+          <h3 class="group-title">Patterns</h3>
+          <div class="group" id="pattern-list"></div>
+          <p class="footnote">Click a pattern to change what it does. Changes apply immediately.</p>
+        </section>
+
+        <!-- Listening -->
+        <section class="page" id="page-listening" role="tabpanel" hidden>
+          <div class="group status-card">
+            <div class="status-icon" id="status-icon" aria-hidden="true"><svg><use href="#i-mic"/></svg></div>
+            <div class="status-text">
+              <div class="status-title" id="status-title">Checking...</div>
+              <div class="status-sub" id="status-sub"></div>
+            </div>
+            <button class="btn" id="status-button" type="button">Pause</button>
+          </div>
+
+          <h3 class="group-title">Detection</h3>
+          <div class="group">
+            <div class="row row-stack">
+              <div class="row-main">
+                <label class="row-label" for="gap">Wait after the last clap</label>
+                <span class="row-value tabular" id="gap-value">0.70 s</span>
+              </div>
+              <input type="range" id="gap" min="0.4" max="1.2" step="0.05" aria-describedby="gap-help">
+              <div class="range-ends" aria-hidden="true"><span>Faster response</span><span>Slower clapping</span></div>
+            </div>
+            <div class="row">
+              <label class="row-label" for="opt-typing">Ignore claps while typing or using the mouse</label>
+              <input type="checkbox" class="switch" id="opt-typing" role="switch">
+            </div>
+          </div>
+          <p class="footnote" id="gap-help">Plaudit waits this long after your last clap before deciding how many there were.</p>
+
+          <h3 class="group-title">General</h3>
+          <div class="group">
+            <div class="row">
+              <label class="row-label" for="opt-startup">Start Plaudit when you sign in</label>
+              <input type="checkbox" class="switch" id="opt-startup" role="switch">
+            </div>
+            <div class="row">
+              <label class="row-label" for="opt-notify">Show a notification when an action runs</label>
+              <input type="checkbox" class="switch" id="opt-notify" role="switch">
+            </div>
+          </div>
+
+          <h3 class="group-title">Microphone</h3>
+          <div class="group">
+            <div class="row"><span class="row-label">Input</span><span class="row-value" id="mic-name">-</span></div>
+            <div class="row"><span class="row-label">Mode</span><span class="row-value" id="mic-mode">-</span></div>
+          </div>
+        </section>
+
+        <!-- Activity -->
+        <section class="page" id="page-activity" role="tabpanel" hidden>
+          <div class="group-header">
+            <h3 class="group-title">Recent claps</h3>
+            <button class="link-button" id="open-logs" type="button">Show log files</button>
+          </div>
+          <div class="group" id="activity-list" aria-live="polite"></div>
+          <p class="footnote">Every clap pattern Plaudit hears is listed here, including ones it ignored and why.</p>
+        </section>
+
+        <!-- About -->
+        <section class="page about" id="page-about" role="tabpanel" hidden>
+          <div class="about-icon app-icon" aria-hidden="true"><svg><use href="#i-wave"/></svg></div>
+          <h2>Plaudit</h2>
+          <p class="about-version">Version 0.2 (prototype)</p>
+          <div class="group about-group">
+            <div class="row"><span class="row-label">Based on</span><span class="row-value">Holo by JustinGamer191 (MIT)</span></div>
+            <div class="row"><span class="row-label">Listening engine</span><span class="row-value">Fast onset detector, on-device</span></div>
+            <div class="row"><span class="row-label">Privacy</span><span class="row-value">Audio never leaves this PC</span></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- Edit sheet -->
+  <div class="scrim" id="scrim" hidden></div>
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title" hidden>
+    <div class="sheet-head">
+      <div class="count-badge large" id="sheet-badge" aria-hidden="true"></div>
+      <div>
+        <h2 id="sheet-title">Clap twice</h2>
+        <p class="sheet-sub">Choose what happens when Plaudit hears this many claps.</p>
+      </div>
+    </div>
+    <div class="group sheet-group">
+      <div class="row">
+        <label class="row-label" for="kind">Action</label>
+        <div class="popup"><select id="kind"></select><svg class="popup-arrows" aria-hidden="true"><use href="#i-updown"/></svg></div>
+      </div>
+      <div class="row" id="value-row">
+        <label class="row-label" for="value-select" id="value-label">Value</label>
+        <div class="popup" id="value-popup"><select id="value-select"></select><svg class="popup-arrows" aria-hidden="true"><use href="#i-updown"/></svg></div>
+        <div class="value-input" id="value-input-wrap">
+          <input type="text" id="value-input" autocomplete="off" spellcheck="false">
+          <button class="btn btn-small" id="browse" type="button">Choose...</button>
+        </div>
+      </div>
+    </div>
+    <p class="field-help" id="value-help"></p>
+    <p class="field-error" id="value-error" role="alert" hidden></p>
+    <div class="sheet-actions">
+      <button class="btn" id="try" type="button"><svg aria-hidden="true"><use href="#i-play"/></svg>Try it</button>
+      <span class="spacer"></span>
+      <button class="btn" id="cancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="done" type="button">Done</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
